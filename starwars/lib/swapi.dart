@@ -3,20 +3,16 @@ import 'package:http/http.dart' as http;
 import 'package:starwars/movies.dart';
 
 class Swapi {
-  Future<List<Movie>> getMovies() {
+  Future<List<Movie>> getMovies() async {
     var url = "https://swapi.co/api/films/?format=json";
-    return http.get(url).then((response) {
-      var content = json.decode(response.body);
-      var movies = List<Movie>.from(content['results'].map((el) {
-        String title = el['title'];
-        int release = int.parse(el['release_date'].split('-')[0]);
-
-        return Movie(title, release);
-      }));
-      movies.sort((a, b) {
-        return a.year - b.year;
-      });
-      return movies;
-    });
+    var response = await http.get(url);
+    var jsonContent = json.decode(response.body);
+    var movies = List<Movie>.from(jsonContent['results'].map((result) {
+      String title = result['title'];
+      int release = int.parse(result['release_date'].split('-')[0]);
+      return Movie(title, release);
+    }));
+    movies.sort((a, b) => a.year.compareTo(b.year));
+    return movies;
   }
 }
