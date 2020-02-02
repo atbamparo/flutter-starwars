@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:starwars/movie_detail.dart';
+import 'package:starwars/swapi.dart';
 
 class Movie {
   final String title;
@@ -8,24 +9,33 @@ class Movie {
   const Movie(this.title, this.year);
 }
 
-const movies = <Movie>[
-  Movie('Star Wars: The New Hope', 1977),
-  Movie('The Empire Strikes Back', 1980),
-  Movie('Return of the Jedi', 1983),
-  Movie('The Phantom Menace', 1999),
-  Movie('Attack of the Clones', 2002),
-  Movie('Revenge of the Sith', 2005),
-  Movie('Star Wars: The Clone Wars', 2008),
-  Movie('The Force Awakens', 2015),
-  Movie('Rogue One', 2016),
-  Movie('The Last Jedi', 2017),
-  Movie('Solo', 2018),
-  Movie('The Rise of Skywalker', 2019),
-];
+class Movies extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return MovieState();
+  }
+}
 
-class Movies extends StatelessWidget {
+class MovieState extends State<Movies> {
+  List<Movie> movies = [];
+
+  @override
+  void initState() {
+    super.initState();
+    var api = new Swapi().getMovies();
+    api.then((m) {
+      setState(() {
+        movies = m;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (movies.isEmpty) {
+      return Align(
+          alignment: Alignment.center, child: CircularProgressIndicator());
+    }
     return ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: movies.length,

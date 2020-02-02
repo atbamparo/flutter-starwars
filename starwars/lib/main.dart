@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:starwars/movies.dart';
-import 'package:starwars/swapi.dart';
 
 void main() {
-  var api = new Swapi().getMovies();
-  api.then((m) => debugPrint(m.toString()));
   runApp(MyApp());
 }
 
