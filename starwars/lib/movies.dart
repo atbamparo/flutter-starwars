@@ -17,25 +17,37 @@ class Movies extends StatefulWidget {
 }
 
 class MovieState extends State<Movies> {
-  List<Movie> movies = [];
+  Future<List<Movie>> _moviesLoader;
 
   @override
   void initState() {
     super.initState();
-    var api = new Swapi().getMovies();
-    api.then((m) {
-      setState(() {
-        movies = m;
-      });
-    });
+    var api = new Swapi();
+    _moviesLoader = api.getMovies();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (movies.isEmpty) {
-      return Align(
-          alignment: Alignment.center, child: CircularProgressIndicator());
-    }
+    return FutureBuilder<List<Movie>>(
+      future: _moviesLoader,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _buildList(snapshot.data);
+        }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error.toString()}');
+        }
+
+        return Align(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator()
+        );
+      }
+    );
+  }
+
+  Widget _buildList(List<Movie> movies)
+  {
     return ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: movies.length,
